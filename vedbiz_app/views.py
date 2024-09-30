@@ -9,7 +9,6 @@ from rest_framework.renderers import TemplateHTMLRenderer
 def index(request):
     return render(request,'base.html')
 
-
 class  BaseView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'index.html'

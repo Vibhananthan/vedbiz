@@ -1,5 +1,6 @@
 # created by virtualenv automatically
 .venv
+.idea
 .env
 vedbiz_app/__pycache__
 vedbiz/__pycache__

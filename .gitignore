@@ -1,0 +1,6 @@
+# created by virtualenv automatically
+.venv
+.env
+vedbiz_app/__pycache__
+vedbiz/__pycache__
+vedbiz_app/migrations

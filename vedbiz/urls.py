@@ -21,4 +21,5 @@ from vedbiz_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='home'),
+    path('index/', views.BaseView.as_view(), name='index'),
 ]

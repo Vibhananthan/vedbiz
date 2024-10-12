@@ -4,10 +4,21 @@ import uuid
 # Create your models here.
 
 class Category(models.Model):
-    category_code=models.CharField(max_length=50)
+    category_code=models.CharField(max_length=50,unique=True, blank=True)
     name = models.CharField(max_length=100)
     category_image = models.URLField(max_length=500)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if not self.category_code:  # Generate category code only if it's not set
+            name_part = self.name[:3].upper()  # First three letters of the name
+            # Count categories that have the same first three letters
+            category_count = Category.objects.filter(name__istartswith=name_part).count() + 1
+            # Set category_code with format NAME_001, NAME_002, etc.
+            self.category_code = f"{name_part}_{category_count:03d}"
+
+        # Always call the superclass method to ensure proper saving
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -20,16 +31,25 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    product_code=models.CharField(max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    product_code=models.CharField(max_length=50,unique=True, blank=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     product_offer = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.URLField(max_length=500)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     return_option = models.BooleanField(default=False)
-    return_date = models.DateField(null=True, blank=True)
-    count = models.IntegerField(default=0)
+    return_duration = models.IntegerField(default=3)
+
+    def save(self, *args, **kwargs):
+        if not self.product_code:
+            # Generate product code only if it's not set
+            category_code = self.category.category_code
+            name_part = self.name[:3].upper()  # First three letters of name
+            product_count = Product.objects.filter(category=self.category).count() + 1
+            self.product_code = f"{category_code}_{name_part}{product_count:03d}"
+
+        super(Product, self).save(*args, **kwargs)
 
 
 
